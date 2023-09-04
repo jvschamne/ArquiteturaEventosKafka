@@ -1,6 +1,6 @@
 # ArquiteturaEventosKafka
 
-###Enunciado:
+*Enunciado:*
 Desenvolvam uma aplicação, em qualquer linguagem de programação, em que ocorram eventos que sejam de interesse de outros processos. 
 Escolham um serviço de mensageria (message broker) e um protocolo específico para comunicação baseada em mensagens. 
 Criem dois ou mais tópicos nesse broker.
