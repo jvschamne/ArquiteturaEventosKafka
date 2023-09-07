@@ -21,10 +21,10 @@ def createConsumer(topics_of_interest):
     print('CREATE CONSUMER')
     c = Consumer(conf)
     c.subscribe(topics)
-
+    print('Aguardando mensagens')
     try:
         while True:
-            print('Aguardando mensagens')
+            
             msg = c.poll(timeout=1.0)
             if msg is None:
                 continue
@@ -47,14 +47,13 @@ questions = [
     inquirer.Text(name='name', message="Qual o seu nome?"),
     inquirer.Checkbox('topics',
                 message="Em quais tópicos você tem interesse {name} ? ",
-                choices=['Vídeo', 'Live', 'Postagem na comunidade'],
+                choices=['Video', 'Live', 'Post'],
             ),
 ]
 
 answers = inquirer.prompt(questions)
 print(answers)
 
+topics = answers['topics']
 
-createConsumer(["esportes"])
-createConsumer(["games"])
-createConsumer(["noticias", "games"])
+createConsumer(topics)

@@ -8,7 +8,7 @@ def delivery_callback(err, msg):
         print('%% Message delivered to %s [%d]\n', (msg.topic(), msg.partition()))
 
 
-def publish_on_topic(topic_to_publish, message):
+def publish_on_topic(channel_name, topic_to_publish, message):
     topic = topic_to_publish
     bootstrapServers = 'pkc-ldjyd.southamerica-east1.gcp.confluent.cloud:9092'
     conf = {
@@ -22,7 +22,15 @@ def publish_on_topic(topic_to_publish, message):
     p = Producer(conf)
 
     try:
-        data = message
+        data = ""
+        if topic_to_publish == 'Video':
+            data = channel_name + " postou o vídeo: " + message
+        elif topic_to_publish == 'Live':
+            data = channel_name + " iniciou uma transmissao ao vivo: " + message
+        else:
+            data = channel_name + " postou na comunidade: " + message
+
+
         p.produce(topic, data, callback=delivery_callback)
     except BufferError as e:
         print('%% Local producer queue is full (%d messages awaiting delivery): try again\n',len(p))
@@ -32,29 +40,22 @@ def publish_on_topic(topic_to_publish, message):
     p.flush()
 
 
+name = input('Qual o nome do seu canal? ')
 
+while True:
+    questions = [
+        inquirer.List('type_of_post',
+                    message="Qual o tipo da postagem? ",
+                    choices=['Video', 'Live', 'Post'],
+                ),
+        inquirer.Text(name='title', message='Qual o título da postagem?')
+    ]
 
+    answers = inquirer.prompt(questions)
+    print(answers)
 
+    type_of_post = answers['type_of_post']
+    title = answers['title']
+    print(name, type_of_post, title)
 
-
-
-questions = [
-    inquirer.Text(name='name', message="Qual o nome do seu canal?"),
-    inquirer.List('type_of_post',
-                message="Qual o tipo da postagem {name} ? ",
-                choices=['Vídeo', 'Live', 'Postagem na comunidade'],
-            ),
-    inquirer.Text(name='title', message='Qual o título da postagem?')
-]
-
-answers = inquirer.prompt(questions)
-print(answers)
-
-name = answers['name']
-type_of_post = answers['type_of_post']
-title = answers['title']
-print(name, type_of_post, title)
-
-publish_on_topic('esportes', 'Palmeiras venceu novamente')
-publish_on_topic('games', 'Alanzoka jogando Overwatch')
-publish_on_topic('noticias', 'Frente fria chegando')
+    publish_on_topic(name, type_of_post, title)
