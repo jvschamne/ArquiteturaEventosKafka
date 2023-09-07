@@ -1,4 +1,6 @@
 from confluent_kafka import Producer
+import inquirer
+
 def delivery_callback(err, msg):
     if err:
         print('%% Message failed delivery: %s\n', err)
@@ -6,7 +8,7 @@ def delivery_callback(err, msg):
         print('%% Message delivered to %s [%d]\n', (msg.topic(), msg.partition()))
 
 
-def createTopic(topic_to_publish, message):
+def publish_on_topic(topic_to_publish, message):
     topic = topic_to_publish
     bootstrapServers = 'pkc-ldjyd.southamerica-east1.gcp.confluent.cloud:9092'
     conf = {
@@ -19,20 +21,40 @@ def createTopic(topic_to_publish, message):
 
     p = Producer(conf)
 
-    messages = ['asd', 'asdasd', 'asd', 'asdasd', 'asd', 'asdasd', 'asd', 'asdasd']
-
-    for m in messages:
-        try:
-                data = m
-                p.produce(topic, data, callback=delivery_callback)
-        except BufferError as e:
-                print('%% Local producer queue is full (%d messages awaiting delivery): try again\n',len(p))
-                p.poll(0)
-
+    try:
+        data = message
+        p.produce(topic, data, callback=delivery_callback)
+    except BufferError as e:
+        print('%% Local producer queue is full (%d messages awaiting delivery): try again\n',len(p))
+        p.poll(0)
 
     print('%% Waiting for %d deliveries\n' % len(p))
     p.flush()
 
 
-createTopic('games', 'Alanzoka jogando Overwatch')
-createTopic('noticias', 'Frente fria chegando')
+
+
+
+
+
+
+questions = [
+    inquirer.Text(name='name', message="Qual o nome do seu canal?"),
+    inquirer.List('type_of_post',
+                message="Qual o tipo da postagem {name} ? ",
+                choices=['Vídeo', 'Live', 'Postagem na comunidade'],
+            ),
+    inquirer.Text(name='title', message='Qual o título da postagem?')
+]
+
+answers = inquirer.prompt(questions)
+print(answers)
+
+name = answers['name']
+type_of_post = answers['type_of_post']
+title = answers['title']
+print(name, type_of_post, title)
+
+publish_on_topic('esportes', 'Palmeiras venceu novamente')
+publish_on_topic('games', 'Alanzoka jogando Overwatch')
+publish_on_topic('noticias', 'Frente fria chegando')
