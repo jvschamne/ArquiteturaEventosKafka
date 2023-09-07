@@ -1,19 +1,19 @@
 from confluent_kafka import Consumer
 import inquirer
 
-def createConsumer(topics_of_interest):
+def createConsumer(name, topics_of_interest):
     topics = topics_of_interest
     print('CONFIGURATIONS')
 
     conf = {
-    'bootstrap.servers': 'pkc-ldjyd.southamerica-east1.gcp.confluent.cloud:9092',
-    'group.id': 'grupo_id',  
-    'session.timeout.ms': 6000,
-    'default.topic.config': {'auto.offset.reset': 'smallest'},
-    'security.protocol': 'SASL_SSL',
-    'sasl.mechanisms': 'PLAIN',
-    'sasl.username': 'HXE3A5JN2WIKIXOV',
-    'sasl.password': 'n7sXmBPAVSp2e8BWG6vk37RxiJvCA8ZjS8fOLO/161m/i6H35KX8fHRi4j2Z96b4'
+        'bootstrap.servers': 'pkc-ldjyd.southamerica-east1.gcp.confluent.cloud:9092',
+        'group.id': f'{name}',  
+        'session.timeout.ms': 6000,
+        'default.topic.config': {'auto.offset.reset': 'smallest'},
+        'security.protocol': 'SASL_SSL',
+        'sasl.mechanisms': 'PLAIN',
+        'sasl.username': 'HXE3A5JN2WIKIXOV',
+        'sasl.password': 'n7sXmBPAVSp2e8BWG6vk37RxiJvCA8ZjS8fOLO/161m/i6H35KX8fHRi4j2Z96b4'
     }
 
     print('CREATE CONSUMER')
@@ -30,7 +30,7 @@ def createConsumer(topics_of_interest):
                 print('Msg error:', msg.error().str() )
             else:
                 # print com a mensagem do tópico
-                print('Mensagem tópico')
+                print(f'Mensagem do tópico (Partição {msg.partition()})')
                 print(msg.value().decode('utf-8'))
 
 
@@ -52,5 +52,5 @@ answers = inquirer.prompt(questions)
 print(answers)
 
 topics = answers['topics']
-
-createConsumer(topics)
+name = answers['name']
+createConsumer(name, topics)
