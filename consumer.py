@@ -1,7 +1,5 @@
 from confluent_kafka import Consumer
 import inquirer
-import sys
-
 
 def createConsumer(topics_of_interest):
     topics = topics_of_interest
@@ -9,7 +7,7 @@ def createConsumer(topics_of_interest):
 
     conf = {
     'bootstrap.servers': 'pkc-ldjyd.southamerica-east1.gcp.confluent.cloud:9092',
-    'group.id': "consumers",
+    'group.id': 'grupo_id',  
     'session.timeout.ms': 6000,
     'default.topic.config': {'auto.offset.reset': 'smallest'},
     'security.protocol': 'SASL_SSL',
@@ -24,7 +22,6 @@ def createConsumer(topics_of_interest):
     print('Aguardando mensagens')
     try:
         while True:
-            
             msg = c.poll(timeout=1.0)
             if msg is None:
                 continue
@@ -38,7 +35,7 @@ def createConsumer(topics_of_interest):
 
 
     except KeyboardInterrupt:
-        sys.stderr.write('%% Aborted by user\n')
+        print('Aborted by user\n')
         # Close down consumer to commit final offsets.
     c.close()
 

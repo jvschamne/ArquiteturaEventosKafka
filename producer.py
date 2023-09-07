@@ -3,9 +3,9 @@ import inquirer
 
 def delivery_callback(err, msg):
     if err:
-        print('%% Message failed delivery: %s\n', err)
+        print(f'Message failed delivery: {err}\n')
     else:
-        print('%% Message delivered to %s [%d]\n', (msg.topic(), msg.partition()))
+        print(f'Message delivered to {msg.topic()} on partition {msg.partition()}\n')
 
 
 def publish_on_topic(channel_name, topic_to_publish, message):
@@ -36,7 +36,7 @@ def publish_on_topic(channel_name, topic_to_publish, message):
         print('%% Local producer queue is full (%d messages awaiting delivery): try again\n',len(p))
         p.poll(0)
 
-    print('%% Waiting for %d deliveries\n' % len(p))
+    print(f'%% Waiting for %d deliveries\n' % len(p))
     p.flush()
 
 
